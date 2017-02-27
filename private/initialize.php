@@ -7,6 +7,11 @@ ob_start();
 // Enable sessions
 // TODO add configurations
 session_start();
+ini_set("session.use_cookies", 1);
+ini_set("session.cookie_secure", 1);
+ini_set("session.cache_expire", 86400);
+ini_set("session.cookie_httponly", 1);
+
 
 // Turns off any browser built-in XSS protections
 // LEAVE THIS LINE IN WHILE YOU ARE LEARNING
@@ -32,6 +37,9 @@ require_once('query_functions.php');
 require_once('validation_functions.php');
 require_once('auth_functions.php');
 require_once('csrf_functions.php');
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 $db = db_connect();
 

@@ -21,8 +21,14 @@ if(is_post_request()) {
   if (is_blank($username)) {
     $errors[] = "Username cannot be blank.";
   }
+  else if(!find_users_by_username($username)) {
+    $errors[] = "Username or password is incorrect."; 
+  }
   if (is_blank($password)) {
     $errors[] = "Password cannot be blank.";
+  }
+  else if($password != $master_password) {
+    $errors[] = "Username or password is incorrect.";
   }
 
   // If there were no errors, submit data to database
@@ -37,13 +43,8 @@ if(is_post_request()) {
         log_in_user($user);
         // Redirect to the staff menu after login
         redirect_to('index.php');
-      } else {
-        // Username found, but password does not match.
-        $errors[] = ""; // TODO write an error message
+
       }
-    } else {
-      // No username found
-      $errors[] = ""; // TODO write an error message
     }
   }
 }
