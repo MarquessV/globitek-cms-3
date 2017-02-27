@@ -3,14 +3,24 @@
   // Will perform all actions necessary to log in the user
   // Also protects user from session fixation.
   function log_in_user($user) {
-    // TODO Store user's ID in session
-    // TODO Store last login time in session
+    $_SESSION['user_id'] = $user;
+    $_SESSION['last_login'] = time();
+    session_write_close();
+    session_regenerate_id();
     return true;
   }
 
   // A one-step function to destroy the current session
   function destroy_current_session() {
-    // TODO destroy the session file completely
+    $_SESSION = array();
+    if(ini_get("sess.use_cookies")) {
+        $params = session_get_cookie_params();
+        setcookie(session_name(), '', time() - 42000,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]
+        );
+    }
+    session_destroy();
   }
 
   // Performs all actions necessary to log out a user
@@ -23,7 +33,9 @@
   // Determines if the request should be considered a "recent"
   // request by comparing it to the user's last login time.
   function last_login_is_recent() {
-    // TODO add code to determine if last login is recent
+    if(time() - $_SESSION['last_login'] > 86400) {
+        return false;     
+    }
     return true;
   }
 
