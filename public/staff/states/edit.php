@@ -1,5 +1,6 @@
 <?php
 require_once('../../../private/initialize.php');
+require_login();
 
 if(!isset($_GET['id'])) {
   redirect_to('../index.php');
@@ -11,15 +12,24 @@ $state = db_fetch_assoc($states_result);
 // Set default values for all variables the page needs.
 $errors = array();
 
-if(is_post_request()) {
+$csrf_token = csrf_token();
+$_SESSION['csrf_token'] = $csrf_token;
+
+if($_SESSION['csrf_token'] != $csrf_token)
+
+if(is_post_request() && request_is_same_domain()) {
 
   // Confirm that values are present before accessing them.
+  if(isset($_POST['csrf_token'])) { $csrf_token = $_POST['csrf_token']; }
   if(isset($_POST['name'])) { $state['name'] = $_POST['name']; }
   if(isset($_POST['code'])) { $state['code'] = $_POST['code']; }
   if(isset($_POST['country_id'])) { $state['country_id'] = $_POST['country_id']; }
 
+
   $result = update_state($state);
-  if($result === true) {
+  if($csrf_token != $_SESSION['csrf_token']) {
+    $errors[] = "Error: invalid request";
+  } else if($result === true) {
     redirect_to('show.php?id=' . $state['id']);
   } else {
     $errors = $result;
@@ -44,7 +54,7 @@ if(is_post_request()) {
     Country ID:<br />
     <input type="text" name="country_id" value="<?php echo h($state['country_id']); ?>" /><br />
     <br />
-    <input type="submit" name="submit" value="Update"  />
+    <input type="hidden" name="csrf_token" value="<?php echo $csrf_token?>" /> 
   </form>
 
 </div>
