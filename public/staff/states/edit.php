@@ -13,9 +13,7 @@ $state = db_fetch_assoc($states_result);
 $errors = array();
 
 $csrf_token = csrf_token();
-$_SESSION['csrf_token'] = $csrf_token;
-
-if($_SESSION['csrf_token'] != $csrf_token)
+if(!isset($_POST['csrf_token'])) { $_SESSION['csrf_token'] = $csrf_token };
 
 if(is_post_request() && request_is_same_domain()) {
 
@@ -26,10 +24,12 @@ if(is_post_request() && request_is_same_domain()) {
   if(isset($_POST['country_id'])) { $state['country_id'] = $_POST['country_id']; }
 
 
-  $result = update_state($state);
   if($csrf_token != $_SESSION['csrf_token']) {
     $errors[] = "Error: invalid request";
-  } else if($result === true) {
+    exit;
+  }
+  $result = update_state($state);
+  if($result === true) {
     redirect_to('show.php?id=' . $state['id']);
   } else {
     $errors = $result;

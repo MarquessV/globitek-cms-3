@@ -472,6 +472,7 @@
   // Find user using id
   function find_user_by_id($id=0) {
     global $db;
+    $id = filter_input(INPUT_GET, $id, FILTER_SANITIZE_SPECIAL_CHARS);
     $sql = "SELECT * FROM users ";
     $sql .= "WHERE id='" . db_escape($db, $id) . "' ";
     $sql .= "LIMIT 1;";
@@ -482,6 +483,7 @@
   // find_users_by_username('rockclimber67');
   function find_users_by_username($username='') {
     global $db;
+    $username = filter_input(INPUT_GET, $username, FILTER_SANITIZE_SPECIAL_CHARS);
     $sql = "SELECT * FROM users ";
     $sql .= "WHERE username = '" . h($username) . "';";
     $users_result = db_query($db, $sql);
