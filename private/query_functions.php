@@ -483,11 +483,18 @@
   // find_users_by_username('rockclimber67');
   function find_users_by_username($username='') {
     global $db;
-    $username = filter_input(INPUT_GET, $username, FILTER_SANITIZE_SPECIAL_CHARS);
+    if(!valid_username($username)) {
+      $username = '';
+    }
     $sql = "SELECT * FROM users ";
     $sql .= "WHERE username = '" . h($username) . "';";
     $users_result = db_query($db, $sql);
     return $users_result;
+  }
+
+  function valid_username($username) {
+    $symbols = array('_');
+    return ctype_alnum(str_replace($symbols, '', $username));
   }
 
   function validate_user($user, $errors=array()) {
